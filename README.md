@@ -1,3 +1,1 @@
-# DressForecast1
-# DressForecast1
-# DressForecast1
+Cloth Forecast is a user-friendly website that provides 5-day weather forecasts along with personalised clothing recommendations based on temperature and weather conditions throughout the day. It includes detailed temperature breakdowns for morning, afternoon, and night, ensuring precise outfit suggestions. Featuring dynamic weather animations, it enhances the user experience and serves as an essential tool for travellers looking to pack or dress appropriately for changing weather.

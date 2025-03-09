@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DressForecast</title>
+  <link rel="stylesheet" href="static/style.css" />
+</head>
+
+<body>
+	<div class="centered-div">
+	<div id="header">
+		<img src="images/logo.png" alt="logo" id="logo">
+		<div id="dc">
+			<input id="city" placeholder="Input your City" list="citys" autofocus>
+			<datalist id="citys">
+   				<option value="sydney">
+   				<option value="melbourn">
+   				<option value="cairns">
+   				<option value="adelaide">
+   				<option value="darwin">
+				<option value="brisbane">
+				<option value="canberra">
+				<option value="goldcoast">
+			</datalist>
+		</div>
+	</div>
+	<div>
+		<button id="btn-sun">AddSun</button>
+		<button id="btn-cloud">AddCloud</button>
+		<button id="btn-rain">AddRain</button>
+		<button id="btn-snow">AddSnow</button>
+		<button id="btn-mist">AddMist</button>
+		<button id="btn-clear">Clear weather</button>
+	</div>
+	<div id="test"></div>
+	<div id="main">	</div>
+	<div id="footer">
+		Powered by Annie
+	</div>
+
+	</div>
+
+	<script src="static/script.js"></script>
+	
+</body>
+
+</html>

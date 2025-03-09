@@ -1,0 +1,178 @@
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background-color: #f8f8ff;/* Page background */
+  height: 100%; /* 确保body和html占据整个视口高度 */
+  margin: 0; /* 移除默认的外边距 */
+  display: flex; /* 启用Flexbox布局 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+}
+
+.centered-div {
+  width: 1000px; /* 示例宽度 */
+  height: 600px; /* 示例高度 */
+}
+
+#header{
+  height: 80px;
+  background-color:#f8f8ff;  
+}
+
+#header img {
+  padding-top: 16px;
+  padding-right: 20px;
+  float: left;
+  z-index: -1;
+}
+
+/* city input*/
+#city{
+  width: 400px;
+  height: 40px;
+  font-size: 30px;
+  float: right;
+  margin-top: 30px;
+  border: 2px;
+}
+
+/* Select bar styling */
+#main{
+  /*background-image: url("/images/melbourn_city1.png");*/
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  width: 1000px;
+  height: 550px;
+}
+
+.day-card {
+  text-align: right;
+  font-weight: bold;
+}
+
+
+.day-card .day {
+  text-align: center;
+  font-size: 40px;
+} 
+
+.day-card .tday {
+  padding-right: 50px;
+  font-size: 20px;
+} 
+
+.day-card .tmin {
+  padding-right: 50px;
+  font-size: 10px;
+} 
+.day-card .tmax {
+  padding-right: 50px;
+  font-size: 10px;
+} 
+.day-card .tnight {
+  padding-right: 50px;
+  font-size: 10px;
+} 
+
+.day-card .tmorn {
+  padding-right: 50px;
+  font-size: 10px;
+} 
+
+.dress_pic{
+  position:relative;
+  width: 200px;
+  height: 350px;
+}
+
+/* pic for girl */
+.dress_pic img{
+  padding-right: 20px;
+  margin-top: 60px;
+  float: right;
+}
+
+/* pic for dress */
+.dress_pic .layer{
+  position: absolute;
+  top: 0;
+  left:0;
+  width: 100%;
+  height: 100%;
+}
+
+.weather {
+  width: 200px;
+}
+
+#footer{
+  height: 50px;
+  padding: 10px;
+  background-color: #2973B2;
+  text-align: center;
+  font-size:  20px;
+  color:#000;
+}
+
+.sun{
+ z-index: 2;
+}
+
+.sunray{
+  position: absolute;
+  animation-name: sunray;
+}
+
+@property --dynamic-x {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 100px;
+}
+
+@property --dynamic-y {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 100px;
+}
+@keyframes sun{
+  from {
+    width: 0px;
+    height: 0px;
+  }
+  to {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@keyframes sunray{
+  0% {opacity: 1;}
+  100% {transform: translate(var(--dynamic-x), var(--dynamic-y)); opacity: 0;}
+}
+
+@keyframes clouds{ 
+  0% {transform: translate(50px, 0px);}
+  100% {transform: translate(-50px, 0px);}
+}
+
+@keyframes raindrops{
+  0%   { transform: translate(0px, 10px);}
+  100% { transform: translate(0px, 350px); opacity: 0; }
+}
+
+
+@keyframes snowflakes{
+  0%   { transform: translate(0px, 0px);}
+  100% { transform: translate(0px, 250px); opacity: 1; }
+}
+
+@keyframes mists{
+  0%   { transform: translate(40px, 0px); opacity: 0.5;}
+  100% { transform: translate(-40px, 0px); opacity: 0;}
+}

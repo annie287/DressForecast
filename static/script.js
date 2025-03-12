@@ -26,11 +26,12 @@ document.getElementById('city').addEventListener('keypress', function(event) {
   if (event.key === 'Enter') { // 或者 event.keyCode === 13 (对于旧版浏览器)
       event.preventDefault(); // 阻止默认行为（如果需要）
 
-      const url = "/weather?q=" + document.getElementById('city').value;
-      const formatter = new Intl.DateTimeFormat("en-US",{month: "short", day:"numeric",});
+      var url = "/weather?q=" + document.getElementById('city').value;
+      var formatter = new Intl.DateTimeFormat("en-US",{month: "short", day:"numeric",});
 
+      // clear all weather animations
       for (i in dayweathertag){
-        clearInterval(dayweathertag[i]);
+        clearInterval(dayweathertag[i]); 
       }
 
       var tes = document.getElementById('test');
@@ -59,9 +60,6 @@ document.getElementById('city').addEventListener('keypress', function(event) {
             var ra = weatherobj.list[i].rain;
             var sn = weatherobj.list[i].snow;
             var pop = weatherobj.list[i].pop;
-
-            //day's weather init.
-            document.querySelector('#d'+i).textContent="";
 
             el = document.createElement('div');
             el.classList.add('weather');
@@ -157,11 +155,38 @@ document.getElementById('city').addEventListener('keypress', function(event) {
 
             document.querySelector('#d'+i).appendChild(el);
 
-            // show city background
-            el = document.getElementById('main');
-            el.style.backgroundImage = "url('/images/sydney_city.jpg')";
-            
           }
+          
+          // show city background
+          el = document.getElementById('main');
+          let cityName = document.getElementById('city').value;
+          cityName = cityName.toLowerCase();
+          
+          const citylists = ['sydney','melbourn'];
+          if (citylists.includes(cityName)){
+            el.style.backgroundImage = `url("/images/city/${cityName}.jpg")`;
+          }
+          else {
+            el.style.backgroundImage = "url('/images/city/default.jpg')";
+          }
+          /*
+          // 动态构建背景图片路径
+          var imageUrl = `/images/${cityName}_city.png`;
+
+
+          // 创建一个 Image 对象来检查图片是否存在
+          var img = new Image();
+          img.src = imageUrl;
+
+          img.onload = function() {
+              // 图片存在，使用该城市的背景
+              el.style.backgroundImage = `url(${imageUrl})`;
+          };
+          img.onerror = function() {
+            // 图片不存在，使用默认背景
+            el.style.backgroundImage = "url('/images/melbourn_city.png')";
+          };
+          */
         } else {
           //tes.textContent = xhr.responseText;
         }

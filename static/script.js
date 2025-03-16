@@ -45,6 +45,21 @@ document.getElementById('city').addEventListener('keypress', function(event) {
           document.querySelector("#main").textContent="";
           var weatherobj = JSON.parse(xhr.responseText);
           tes.textContent = "";
+
+          // show city background
+          el = document.getElementById('main');
+          let cityName = document.getElementById('city').value;
+          cityName = cityName.toLowerCase();
+          
+          const citylists = ['sydney','melbourn'];
+          if (citylists.includes(cityName)){
+            el.style.backgroundImage = `url("/images/city/${cityName}.jpg")`;
+          }
+          else {
+            el.style.backgroundImage = "url('/images/city/default.jpg')";
+          }
+
+          // show weather animation for each day 
           for (i in weatherobj.list){
 
             let el = document.createElement('div');
@@ -136,57 +151,12 @@ document.getElementById('city').addEventListener('keypress', function(event) {
             {
               dayweathertag[i] = setInterval(showCloud, 1000, i); // Add a new Cloud every 1000ms
             }
-
-            // show dress suggest
-            el = document.createElement('div');
-            el.classList.add('dress_pic');
-
-            let x = document.createElement('img');
-            x.classList.add('layer');
-            x.style.zIndex = 2;
-            x.src = "images/girl1.png";
-            el.appendChild(x);
-
-            x = document.createElement('img');
-            x.classList.add('layer');
-            x.style.zIndex = 1;
-            x.src = "images/girl.png";
-            el.appendChild(x);
-
-            document.querySelector('#d'+i).appendChild(el);
+            
+            // show dress suggest.
+            showDressForecast(i, weatherobj.list[i]);
 
           }
           
-          // show city background
-          el = document.getElementById('main');
-          let cityName = document.getElementById('city').value;
-          cityName = cityName.toLowerCase();
-          
-          const citylists = ['sydney','melbourn'];
-          if (citylists.includes(cityName)){
-            el.style.backgroundImage = `url("/images/city/${cityName}.jpg")`;
-          }
-          else {
-            el.style.backgroundImage = "url('/images/city/default.jpg')";
-          }
-          /*
-          // 动态构建背景图片路径
-          var imageUrl = `/images/${cityName}_city.png`;
-
-
-          // 创建一个 Image 对象来检查图片是否存在
-          var img = new Image();
-          img.src = imageUrl;
-
-          img.onload = function() {
-              // 图片存在，使用该城市的背景
-              el.style.backgroundImage = `url(${imageUrl})`;
-          };
-          img.onerror = function() {
-            // 图片不存在，使用默认背景
-            el.style.backgroundImage = "url('/images/melbourn_city.png')";
-          };
-          */
         } else {
           //tes.textContent = xhr.responseText;
         }
@@ -211,33 +181,63 @@ document.getElementById('btn-clear').addEventListener('click', async () => {
 });
 
 // Dress forecast by  temperature
-function showDressForecast(temperature) {
+function showDressForecast(i,weatherobj) {
 
-	const img = document.getElementById('dress');
-	if (temperature > 35) {
-      // Randomly choose between "Short-sleeve Top" and "Short Skirt"
-      let t = Math.random();
-      if (t > 0.5)
-	  img.src = 'short-sleeve.png';
-	  else 
-	  img.src = 'short-skirt.png';
-	  
-    } else if (feelsLike > 20 && feelsLike <= 35) {
-	  img.src = 'long-skirt.png';
-      // outfit = "Long Skirt";
-    } else if (feelsLike > 10 && feelsLike <= 20) {
-	  img.src = 'long-paints.png';
-      // outfit = "Long-sleeved Top, Long Pants, and a Coat";
-    } else {
-	  img.src = 'long-Jacket.png';
-      // outfit = "Long-sleeved Top, Long Pants, and a Down Jacket";
-    }
-}
+  // show dress suggest
+  var el = document.createElement('div');
+  el.classList.add('dress_pic');
 
-// Show umbrella
-function showUmbrella(rain) {
-		var img = document.getElementById('umbrella');
- 		img.src = 'umbrella.png'
+  // show base people kayer
+  let x = document.createElement('img');
+  x.classList.add('layer');
+  x.style.zIndex = 1;
+  x.src = "images/woman1.png";
+  el.appendChild(x);
+
+  //show cloths layer.
+
+  x = document.createElement('img');
+  x.classList.add('layer');
+  x.style.zIndex = 2;
+
+	if (weatherobj.temp.day > 35) {
+    // Randomly choose between "Short-sleeve Top" and "Short Skirt"
+    let t = Math.random();
+    if (t > 0.5)
+      x.src = "images/dress/t-shirt.png";// outfit = "t-shirt";
+    else 
+      x.src = "images/dress/skirt.png"; // outfit = "short-skirt";
+  } else if (weatherobj.temp.day > 20 && weatherobj.temp.day <= 35) {
+      x.src = "images/dress/long-dress.png";
+  } else if (weatherobj.temp.day > 10 && weatherobj.temp.day <= 20) {
+      x.src = "images/dress/pant.png"; // outfit = "Long-sleeved Top, Long Pants, and a Coat";
+  } else {
+      x.src = "images/dress/puffer-jacket.png";  // outfit = "Long-sleeved Top, Long Pants, and a Down Jacket";
+  }
+
+  el.appendChild(x);
+
+  //show pants layer.
+
+  //show coat layer.
+
+  //show shoes layer.
+
+  //show accessory layer.
+
+  //show umbrella
+  if (weatherobj.temp.rain > 35) {
+    x = document.createElement('img');
+    x.classList.add('layer');
+    x.style.zIndex = 3;
+    x.src = "images/umbrella.png";
+    el.appendChild(x);
+  }
+
+
+  
+  document.querySelector('#d'+i).appendChild(el);
+
 }
 
 function showSun(d){

@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VVE5KW90HP"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VVE5KW90HP');
+</script>
+
+<!-- Google charts-->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>DressForecast</title>
@@ -9,6 +23,7 @@
 
 <body>
 	<div class="centered-div">
+
 	<div id="header">
 		<img src="images/logo.png" alt="logo" id="logo">
 		<div id="dc">
@@ -25,6 +40,7 @@
 			</datalist>
 		</div>
 	</div>
+	
 	<div>
 		<button id="btn-sun">AddSun</button>
 		<button id="btn-cloud">AddCloud</button>
@@ -34,9 +50,13 @@
 		<button id="btn-clear">Clear weather</button>
 	</div>
 	<div id="test"></div>
+
 	<div id="main">	</div>
+
+	<div id="chart_div"></div>
+
 	<div id="footer">
-		Powered by Annie
+		@ Powered by Annie
 	</div>
 
 	</div>

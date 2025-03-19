@@ -22,11 +22,15 @@ document.getElementById('btn-mist').addEventListener('click', async () => {
 
 var dayweathertag = [];
 
+google.charts.load('current', {'packages':['corechart', 'line']});
+//google.charts.setOnLoadCallback(drawChart);
+
+
 document.getElementById('city').addEventListener('keypress', function(event) {
   if (event.key === 'Enter') { // 或者 event.keyCode === 13 (对于旧版浏览器)
       event.preventDefault(); // 阻止默认行为（如果需要）
 
-      var url = "/weather?q=" + document.getElementById('city').value;
+      var url = "/weather/daily/" + document.getElementById('city').value;
       var formatter = new Intl.DateTimeFormat("en-US",{month: "short", day:"numeric",});
 
       // clear all weather animations
@@ -35,6 +39,21 @@ document.getElementById('city').addEventListener('keypress', function(event) {
       }
 
       var tes = document.getElementById('test');
+
+      var data =  new google.visualization.DataTable();
+      data.addColumn('string', 'Day');
+      data.addColumn('number', 'Min');
+      data.addColumn('number', 'Max');
+      data.addColumn('number', 'Morning');
+      data.addColumn('number', 'Evening');
+
+      var options = {
+        vAxis: {
+          title: 'Temperature (°C)'
+        },
+        curveType: 'function',
+        legend: { position: 'bottom' }
+      };
       
       var xhr = new XMLHttpRequest();
       xhr.open('GET', url, true);
@@ -76,6 +95,8 @@ document.getElementById('city').addEventListener('keypress', function(event) {
             var sn = weatherobj.list[i].snow;
             var pop = weatherobj.list[i].pop;
 
+            data.addRows([[formatter.format(new Date(dt)),weatherobj.list[i].temp.min,weatherobj.list[i].temp.max,weatherobj.list[i].temp.morn,weatherobj.list[i].temp.eve]]);
+
             el = document.createElement('div');
             el.classList.add('weather');
             document.querySelector('#d'+i).appendChild(el);
@@ -89,27 +110,7 @@ document.getElementById('city').addEventListener('keypress', function(event) {
 
             el = document.createElement('div');
             el.classList.add('tday');
-            el.textContent = 'Day  :' + weatherobj.list[i].temp.day + '°C';
-            document.querySelector('#d'+i).appendChild(el);
-
-            el = document.createElement('div');
-            el.classList.add('tmin');
-            el.textContent = 'min  :' + weatherobj.list[i].temp.min + '°C';
-            document.querySelector('#d'+i).appendChild(el);
-
-            el = document.createElement('div');
-            el.classList.add('tmax');
-            el.textContent = 'max  :' + weatherobj.list[i].temp.max + '°C';
-            document.querySelector('#d'+i).appendChild(el);
-
-            el = document.createElement('div');
-            el.classList.add('tnight');
-            el.textContent = 'night:' + weatherobj.list[i].temp.night + '°C';
-            document.querySelector('#d'+i).appendChild(el);
-
-            el = document.createElement('div');
-            el.classList.add('tmorn');
-            el.textContent = 'morn :' + weatherobj.list[i].temp.morn + '°C';
+            el.textContent = weatherobj.list[i].temp.day + '°C';
             document.querySelector('#d'+i).appendChild(el);
 
             // show weather animations
@@ -156,6 +157,11 @@ document.getElementById('city').addEventListener('keypress', function(event) {
             showDressForecast(i, weatherobj.list[i]);
 
           }
+
+          //show weather charts
+          var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+          chart.draw(data, options);
           
         } else {
           //tes.textContent = xhr.responseText;

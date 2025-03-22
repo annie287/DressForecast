@@ -198,47 +198,62 @@ function showDressForecast(i,weatherobj) {
   let x = document.createElement('img');
   x.classList.add('layer');
   x.style.zIndex = 1;
-  x.src = "images/woman1.png";
+  x.src = "images/dress/girl.png";
   el.appendChild(x);
 
-  //show cloths layer.
+  //show tops layer.
+  let x1 = document.createElement('img');
+  x1.classList.add('layer');
+  x1.style.zIndex = 2;
 
-  x = document.createElement('img');
-  x.classList.add('layer');
-  x.style.zIndex = 2;
+  //show coats layer.
+  let x2 = document.createElement('img');
+  x2.classList.add('layer');
+  x2.style.zIndex = 3;
 
-	if (weatherobj.temp.day > 35) {
+  //show bottoms layer.
+  let x3 = document.createElement('img');
+  x3.classList.add('layer');
+  x3.style.zIndex = 2;
+
+  //show shoes layer.
+  let x4 = document.createElement('img');
+  x4.classList.add('layer');
+  x4.style.zIndex = 2;
+
+  //show accessories layer.
+  let x5 = document.createElement('img');
+  x5.classList.add('layer');
+  x5.style.zIndex = 2;
+
+	if (weatherobj.temp.day > 35) {                                     // outfit = "shirt, shot";
     // Randomly choose between "Short-sleeve Top" and "Short Skirt"
     let t = Math.random();
     if (t > 0.5)
-      x.src = "images/dress/t-shirt.png";// outfit = "t-shirt";
+      x1.src = "images/dress/tops/white_tshirt.png";// outfit = "t-shirt";
     else 
-      x.src = "images/dress/skirt.png"; // outfit = "short-skirt";
-  } else if (weatherobj.temp.day > 20 && weatherobj.temp.day <= 35) {
-      x.src = "images/dress/long-dress.png";
-  } else if (weatherobj.temp.day > 10 && weatherobj.temp.day <= 20) {
-      x.src = "images/dress/pant.png"; // outfit = "Long-sleeved Top, Long Pants, and a Coat";
-  } else {
-      x.src = "images/dress/puffer-jacket.png";  // outfit = "Long-sleeved Top, Long Pants, and a Down Jacket";
+      x1.src = "images/dress/tops/t-shirt.png"; // outfit = "short-skirt";
+
+    x3.src = "images/dress/pants/short.png"; // outfit = "";
+
+  } else if (weatherobj.temp.day > 20 && weatherobj.temp.day <= 35) { // outfit = "Long-sleeved Top, Long Pants, and a Down Jacket";
+      x1.src = "images/dress//tops/long-dress.png";
+  } else if (weatherobj.temp.day > 10 && weatherobj.temp.day <= 20) { // outfit = "Long-sleeved Top, Long Pants, and a Coat";
+      x1.src = "images/dress/tops/pant.png"; 
+  } else {                                                            // outfit = "Long-sleeved Top, Long Pants, and a Down Jacket";
+      x1.src = "images/dress/coats/coat.png";  
   }
 
-  el.appendChild(x);
-
-  //show pants layer.
-
-  //show coat layer.
-
-  //show shoes layer.
-
-  //show accessory layer.
+    el.appendChild(x1); //show tops layer. 
+//    el.appendChild(x2); //show coats layer.
+    el.appendChild(x3); //show pants layer.
+    el.appendChild(x4); //show shoes layer.
+//    el.appendChild(x5); //show accessory layer.
 
   //show umbrella
   if (weatherobj.temp.rain > 35) {
-    x = document.createElement('img');
-    x.classList.add('layer');
-    x.style.zIndex = 3;
-    x.src = "images/umbrella.png";
-    el.appendChild(x);
+    x5.src = "images/dress/accessories/umbrella.png";
+    el.appendChild(x5);
   }
 
   document.querySelector('#d'+i).appendChild(el);

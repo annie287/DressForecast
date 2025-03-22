@@ -42,10 +42,9 @@ document.getElementById('city').addEventListener('keypress', function(event) {
 
       var data =  new google.visualization.DataTable();
       data.addColumn('string', 'Day');
-      data.addColumn('number', 'Min');
       data.addColumn('number', 'Max');
-      data.addColumn('number', 'Morning');
-      data.addColumn('number', 'Evening');
+      data.addColumn('number', 'Avg');
+      data.addColumn('number', 'Min');
 
       var options = {
         vAxis: {
@@ -95,7 +94,7 @@ document.getElementById('city').addEventListener('keypress', function(event) {
             var sn = weatherobj.list[i].snow;
             var pop = weatherobj.list[i].pop;
 
-            data.addRows([[formatter.format(new Date(dt)),weatherobj.list[i].temp.min,weatherobj.list[i].temp.max,weatherobj.list[i].temp.morn,weatherobj.list[i].temp.eve]]);
+            data.addRows([[formatter.format(new Date(dt)),weatherobj.list[i].temp.max,weatherobj.list[i].temp.day,weatherobj.list[i].temp.min]]);
 
             el = document.createElement('div');
             el.classList.add('weather');
@@ -162,6 +161,8 @@ document.getElementById('city').addEventListener('keypress', function(event) {
           var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
 
           chart.draw(data, options);
+
+          showDressContent(cityName);
           
         } else {
           //tes.textContent = xhr.responseText;
@@ -240,9 +241,12 @@ function showDressForecast(i,weatherobj) {
     el.appendChild(x);
   }
 
-
-  
   document.querySelector('#d'+i).appendChild(el);
+
+}
+
+// Dress content by OpenAI
+function showDressContent(cityName) {
 
 }
 

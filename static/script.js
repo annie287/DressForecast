@@ -164,6 +164,19 @@ document.getElementById('city').addEventListener('keypress', function(event) {
 
           showDressContent(cityName);
           
+          fetch('http://ip-api.com/json/?fields=status,message,country,regionName,city')
+          .then(response => response.json())
+          .then(data => {
+              if (data.status === 'success') {
+                  console.log(`您的城市是：${data.city}`);
+              } else {
+                  console.log('无法获取城市信息');
+              }
+          })
+          .catch(error => {
+              console.error('请求失败：', error);
+          });
+          
         } else {
           //tes.textContent = xhr.responseText;
         }
@@ -226,35 +239,136 @@ function showDressForecast(i,weatherobj) {
   x5.classList.add('layer');
   x5.style.zIndex = 2;
 
-	if (weatherobj.temp.day > 35) {                                     // outfit = "shirt, shot";
-    // Randomly choose between "Short-sleeve Top" and "Short Skirt"
+  var weacon = weatherobj.list[i].weather[0].main;
+
+	if (weatherobj.temp.day > 25) {     
+    x1.src = "images/dress/tops/white_tshirt.png";
+
+    // Randomly choose between shorts and skirts
     let t = Math.random();
-    if (t > 0.5)
-      x1.src = "images/dress/tops/white_tshirt.png";// outfit = "t-shirt";
-    else 
-      x1.src = "images/dress/tops/t-shirt.png"; // outfit = "short-skirt";
+    if (t > 0.75){
+      x3.src = "images/dress/pants/short.png";
+    }
+    else if (t > 0.5 && t <= 0.75){
+      x3.src = "images/dress/pants/pink_skirt.png";}
+    
+    else if (t > 0.25 && t <= 0.5){
+      x3.src = "images/dress/pants/yellow_skirt.png";
+    }
+    else{
+      x3.src = "images/dress/pants/green_long_dress.png";
+    }
+      
+    x4.src = "images/dress/shoes/sandles.png";
 
-    x3.src = "images/dress/pants/short.png"; // outfit = "";
 
-  } else if (weatherobj.temp.day > 20 && weatherobj.temp.day <= 35) { // outfit = "Long-sleeved Top, Long Pants, and a Down Jacket";
-      x1.src = "images/dress//tops/long-dress.png";
-  } else if (weatherobj.temp.day > 10 && weatherobj.temp.day <= 20) { // outfit = "Long-sleeved Top, Long Pants, and a Coat";
-      x1.src = "images/dress/tops/pant.png"; 
-  } else {                                                            // outfit = "Long-sleeved Top, Long Pants, and a Down Jacket";
+
+
+} else if (weatherobj.temp.day > 20 && weatherobj.temp.day <= 25) { // outfit = "Long-sleeved Top, Long Pants, and a Down Jacket";
+    x1.src = "images/dress/tops/white_tshirt.png";
+
+    // Randomly choose between shorts and skirts
+    let t = Math.random();
+    if (t > 0.75){
+      x3.src = "images/dress/pants/short.png";
+    }
+    else if (t > 0.5 && t <= 0.75){
+      x3.src = "images/dress/pants/pink_skirt.png";}
+    
+    else if (t > 0.25 && t <= 0.5){
+      x3.src = "images/dress/pants/yellow_skirt.png";
+    }
+    else (t <= 0.25){
+      x3.src = "images/dress/pants/green_long_dress.png";
+    }
+      
+    x4.src = "images/dress/shoes/shoes.png";
+
+
+} else if (weatherobj.temp.day > 17 && weatherobj.temp.day <= 20) { // outfit = "Long-sleeved Top, Long Pants, and a Coat";
+      x1.src = "images/dress/tops/long_sleeve.png"; 
+      x3.src = "images/dress/pants/pant.png";
+      x4.src = "images/dress/shoes/shoes.png";
+
+
+} else if (weatherobj.temp.day > 15 && weatherobj.temp.day <= 17){
+    let t = Math.random();
+    if (t > 0.5){
+      x1.src = "images/dress/tops/long_sleeve.png"; 
+    }
+    else{
+      x1.src = "images/dress/tops/sweater.png";
+    }
+    x3.src = "images/dress/pants/pant.png";
+    x4.src = "images/dress/shoes/shoes.png";
+
+    
+
+} else if (weatherobj.temp.day > 10 && weatherobj.temp.day <= 15){
+  let t = Math.random();
+    if (t > 0.5){
+      x1.src = "images/dress/tops/long_sleeve.png"; 
+    }
+    else{
+      x1.src = "images/dress/tops/sweater.png";
+    }
+    x2.src = "images/dress/coats/trench_coat.png";
+    el.appendChild(x2);
+    x3.src = "images/dress/pants/pant.png";
+    x4.src = "images/dress/shoes/boots.png";
+
+    x5.src = "images/dress/accessories/scarf.png";
+    el.appendChild(x5);
+    x5.src = "images/dress/accessories/gloves.png";
+    el.appendChild(x5);
+    x5.src = "images/dress/accessories/hat.png";
+    el.appendChild(x5);
+    x5.src = "images/dress/accessories/binnie.png";
+    el.appendChild(x5);
+
+
+
+} else if (weatherobj.temp.day <= 10){
+    let t = Math.random();
+    if (t > 0.5){
+      x1.src = "images/dress/tops/long_sleeve.png"; 
+    }
+    else{
+      x1.src = "images/dress/tops/sweater.png";
+    }
+    x2.src = "images/dress/coats/puffer_jacket.png";
+    el.appendChild(x2);
+    x3.src = "images/dress/pants/pant.png";
+    x4.src = "images/dress/shoes/boots.png";
+    
+    x5.src = "images/dress/accessories/scarf.png";
+    el.appendChild(x5);
+    x5.src = "images/dress/accessories/gloves.png";
+    el.appendChild(x5);
+    x5.src = "images/dress/accessories/hat.png";
+    el.appendChild(x5);
+    x5.src = "images/dress/accessories/binnie.png";
+    el.appendChild(x5);
+  }
+   else {                             
       x1.src = "images/dress/coats/coat.png";  
   }
+
+
+  if (weacon == "Clear"){
+    x5.src = "images/dress/accessories/sunglasses.png";
+  }
+  if (weacon == "Rain" || weacon == "Drizzle"){
+    x5.src = "images/dress/accessories/umbrella.png";
+    x4.src = "images/dress/shoes/rain_shoes.png";
+  }
+
 
     el.appendChild(x1); //show tops layer. 
 //    el.appendChild(x2); //show coats layer.
     el.appendChild(x3); //show pants layer.
     el.appendChild(x4); //show shoes layer.
 //    el.appendChild(x5); //show accessory layer.
-
-  //show umbrella
-  if (weatherobj.temp.rain > 35) {
-    x5.src = "images/dress/accessories/umbrella.png";
-    el.appendChild(x5);
-  }
 
   document.querySelector('#d'+i).appendChild(el);
 

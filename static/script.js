@@ -1,213 +1,183 @@
-document.getElementById('btn-sun').addEventListener('click', async () => {
-  showSun(`1`); 
-  s = setInterval(showRays, 1000,`1`); // Add a new sunray every 1000ms
-});
 
-document.getElementById('btn-cloud').addEventListener('click', async () => {
-  c = setInterval(showCloud, 1000,`2`); // Add a new Cloud every 1000ms
+// This script is used to get the user's location and display the weather forecast for that location.
+// Author: Anny
+// last updated: 2025-04-06
 
-});
+//Initialize variables
+var dayweather_animation_tag = []; // Init weather animation tag
+var cityName = ""; // Init city name
+var dayNumber = 5;
+var weatherobj;
 
-document.getElementById('btn-rain').addEventListener('click', async () => {
-  r = setInterval(showRain, 100,`3`); // Add a new rain every 1000ms
-});
+// Get user's location using the Geolocation API
+fetch("https://api.ipgeolocation.io/ipgeo?apiKey=ce5e1a3deed94a2897f1c83aba82b031&fields=city,country_code2")
+  .then(response => response.json())
+  .then(data => {
+      console.log(`Your city is ：${data.city}, ${data.country_code2}`);
+      document.getElementById('city').value = data.city+','+data.country_code2;
+      document.getElementById('city').dispatchEvent(new KeyboardEvent('keypress', {
+        'key': 'Enter',
+        'code': 'Enter',
+        'which': 13,
+        'keyCode': 13,
+        'bubbles': true
+      }));
+    })
+  .catch(error => {
+    console.error('request error:', error);
+  });
 
-document.getElementById('btn-snow').addEventListener('click', async () => {
-  sn = setInterval(showSnow, 600,`4`); // Add a new snow every 1000ms
-});
+//Init date formatter.
+var formatter = new Intl.DateTimeFormat("en-US",{month: "short", day:"numeric",});
 
-document.getElementById('btn-mist').addEventListener('click', async () => {
-  mi = setInterval(showMist, 1000,`5`); // Add a new mist every 1000ms
-});
+//Init temperature chart.
+google.charts.load('current', {'packages':['corechart']});
 
-var dayweathertag = [];
-
-google.charts.load('current', {'packages':['corechart', 'line']});
-//google.charts.setOnLoadCallback(drawChart);
-
-
+// Add event listener to the input element's keypress event.
 document.getElementById('city').addEventListener('keypress', function(event) {
-  if (event.key === 'Enter') { // 或者 event.keyCode === 13 (对于旧版浏览器)
-      event.preventDefault(); // 阻止默认行为（如果需要）
+  if (event.key === 'Enter' || event.keyCode === 13) { // User pressed Enter.
 
-      var url = "/weather/daily/" + document.getElementById('city').value;
-      var formatter = new Intl.DateTimeFormat("en-US",{month: "short", day:"numeric",});
-
-      // clear all weather animations
-      for (i in dayweathertag){
-        clearInterval(dayweathertag[i]); 
+      event.preventDefault(); // disable default action.
+ 
+      // clear every day's weather animations
+      for (i in dayweather_animation_tag ){
+        clearInterval(dayweather_animation_tag [i]); 
       }
 
-      var tes = document.getElementById('test');
-
-      var data =  new google.visualization.DataTable();
-      data.addColumn('string', 'Day');
-      data.addColumn('number', 'Max');
-      data.addColumn('number', 'Avg');
-      data.addColumn('number', 'Min');
-
-      var options = {
-        vAxis: {
-          title: 'Temperature (°C)'
-        },
-        curveType: 'function',
-        legend: { position: 'bottom' }
-      };
+      //clear weather div.
+      document.getElementById('main').innerHTML = "";
+      cityName = document.getElementById('city').value;
       
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', url, true);
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      
-      xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          document.querySelector("#main").textContent="";
-          var weatherobj = JSON.parse(xhr.responseText);
-          tes.textContent = "";
 
-          // show city background
-          el = document.getElementById('main');
-          let cityName = document.getElementById('city').value;
-          cityName = cityName.toLowerCase();
+      // Get weather data from Open Weather API.
+      var url = "/api/weather/daily/" + cityName.replace(",","/");
+
+      fetch(url)
+        .then(response => {
+          if (!response.ok) { //peocess error response.
+            throw new Error('Network response was not ok ' + response.statusText);
+          }
+          return response.json();
+        })
+        .then(data => {
           
-          const citylists = ['sydney','melbourn'];
-          if (citylists.includes(cityName)){
-            el.style.backgroundImage = `url("/images/city/${cityName}.jpg")`;
-          }
-          else {
-            el.style.backgroundImage = "url('/images/city/default.jpg')";
-          }
+          var chartdata =  new google.visualization.DataTable();
+          chartdata.addColumn('string', 'Date');
+          chartdata.addColumn('number', 'Max');
+          chartdata.addColumn('number', 'Day');
+          chartdata.addColumn('number', 'Min');
 
-          // show weather animation for each day 
-          for (i in weatherobj.list){
+          var options = {
+          vAxis: {title: 'Temperature (°C)'},
+          curveType: 'function',
+          legend: { position: 'right' }
+          };
 
+          showCityBackground(cityName.toLowerCase().split(",")[0]); // show city background
+
+          for (i in data.list){
             let el = document.createElement('div');
             el.classList.add('day-card');
             el.id = 'd'+i;
+
+            let el1 = document.createElement('div');
+            el1.classList.add('day');
+            el1.textContent = formatter.format(new Date(data.list[i].dt * 1000));
+            el.appendChild(el1);
+          
+            el1 = document.createElement('div');
+            el1.classList.add('tday');
+            el1.textContent = data.list[i].temp.day + '°C';
+            el.appendChild(el1);
+          
+            //Add day's weather div.
+            el1 = document.createElement('div');
+            el1.classList.add('weather');
+            el.appendChild(el1);
+
             document.querySelector("#main").appendChild(el);
 
-            var dt = weatherobj.list[i].dt;
-            dt = dt * 1000;
-
-            var sp = weatherobj.list[i].speed;
-            var cl = weatherobj.list[i].clouds;
-            var ra = weatherobj.list[i].rain;
-            var sn = weatherobj.list[i].snow;
-            var pop = weatherobj.list[i].pop;
-
-            data.addRows([[formatter.format(new Date(dt)),weatherobj.list[i].temp.max,weatherobj.list[i].temp.day,weatherobj.list[i].temp.min]]);
-
-            el = document.createElement('div');
-            el.classList.add('weather');
-            document.querySelector('#d'+i).appendChild(el);
-
-            //test dymanic add weather information.
-            el = document.createElement('div');
-            el.classList.add('day');
-            el.textContent = formatter.format(new Date(dt));
-            document.querySelector('#d'+i).appendChild(el);
-
-
-            el = document.createElement('div');
-            el.classList.add('tday');
-            el.textContent = weatherobj.list[i].temp.day + '°C';
-            document.querySelector('#d'+i).appendChild(el);
-
-            // show weather animations
-            var wea = weatherobj.list[i].weather[0].id;
-            if (wea == 500)
-            {
-              dayweathertag[i] = setInterval(showRain, 1000,i); // Add a new rain every 1000ms
-            } else
-            if (wea == 501)
-            {
-              dayweathertag[i] = setInterval(showRain, 500,i); // Add a new rain every 1000ms
-            } else
-            if (wea == 502)
-            {
-              dayweathertag[i] = setInterval(showRain, 200,i); // Add a new rain every 1000ms
-            } else
-            if (wea == 503)
-            {
-              dayweathertag[i] = setInterval(showRain, 50,i); // Add a new rain every 1000ms
-            } else
-            if (wea == 504)
-            {
-              dayweathertag[i] = setInterval(showRain, 10,i); // Add a new rain every 1000ms
-            } else
-            if (wea >=600 && wea<700)
-            {
-              dayweathertag[i] = setInterval(showSnow, 1000, i); // Add a new snow every 1000ms
-            } else
-            if (wea >=700 && wea<800)
-            {
-              dayweathertag[i] = setInterval(showMist, 1000, i); // Add a new mist every 1000ms
-            }else
-            if (wea ===800)
-            {
-              showSun(i);
-              dayweathertag[i] = setInterval(showRays, 1000, i)
-            }else 
-            if (wea >800 && wea<900)
-            {
-              dayweathertag[i] = setInterval(showCloud, 1000, i); // Add a new Cloud every 1000ms
-            }
+            showWeatherAnimation(i,data.list[i]); // show weather condition animation.
             
-            // show dress suggest.
-            showDressForecast(i, weatherobj.list[i]);
+            showDressForecast(i, data.list[i]); // show dress suggest.
 
+            callOpenAI(i,data.list[i]); // show cloth suggestion from OpenAI.
+
+            chartdata.addRows([[formatter.format(new Date(data.list[i].dt)),data.list[i].temp.max,data.list[i].temp.day,data.list[i].temp.min]]);
+          
           }
 
           //show weather charts
           var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+          chart.draw(chartdata, options);
 
-          chart.draw(data, options);
-
-          showDressContent(cityName);
-          
-          fetch('http://ip-api.com/json/?fields=status,message,country,regionName,city')
-          .then(response => response.json())
-          .then(data => {
-              if (data.status === 'success') {
-                  console.log(`您的城市是：${data.city}`);
-              } else {
-                  console.log('无法获取城市信息');
-              }
-          })
-          .catch(error => {
-              console.error('请求失败：', error);
-          });
-          
-        } else {
-          //tes.textContent = xhr.responseText;
-        }
-
-      };
-      
-      xhr.onerror = function () {
-          console.error('There was a network error.');
-      };
-      
-      xhr.send();
-
+        })
+        .catch(error => console.error('Error:', error));
   }
 });
 
-document.getElementById('btn-clear').addEventListener('click', async () => {
-  clearInterval(s);
-  clearInterval(c);
-  clearInterval(r);
-  clearInterval(sn);
-  clearInterval(mi);
-});
+// Show city background
+function showCityBackground(cityName) {
+  fetch ('/citylist.txt')
+  .then(response => response.text())
+  .then(data => {
+    if (data.includes(cityName)){
+      document.getElementById('main').style.backgroundImage = `url("/images/city/${cityName}.jpg")`;
+    }
+    else {
+      document.getElementById('main').style.backgroundImage = "url('/images/city/default.jpg')";
+    }
+  })
+  .catch(error => console.error('Error:', error));
+};
 
-// Dress forecast by  temperature
+// Show day‘⬆️weather animations
+function showWeatherAnimation(i,weatherobj) {
+  //test dymanic add weather information.
+  // show weather animations
+  switch (weatherobj.weather[0].icon) {
+    case "01d": // clear sky
+      showSun(i);
+      dayweather_animation_tag[i] = setInterval(showRays, 1000, i); // Add a new sunray
+      break;
+    case "02d": // 	few clouds
+      showSun(i);
+      dayweather_animation_tag[i] = setInterval(showCloud, weatherobj.clouds * 10, i); // Add a new Cloud
+      break;
+    case "03d":  // scattered clouds
+      dayweather_animation_tag[i] = setInterval(showCloud, weatherobj.clouds * 10, i); // Add a new Cloud
+      break;
+    case "04d": // broken clouds
+      dayweather_animation_tag[i] = setInterval(showCloud, weatherobj.clouds * 100, i); // Add a new Cloud
+      break;
+    case  "09d": //shower rain
+      dayweather_animation_tag[i] = setInterval(showRain, 1000/weatherobj.rain,i); // Add a new rain
+      break;
+    case "10d": //rain
+      dayweather_animation_tag[i] = setInterval(showRain, 1000/weatherobj.rain,i); // Add a new rain
+      break;
+    case "11d": //thunderstorm
+      dayweather_animation_tag[i] = setInterval(showThunderstorm, 1000, i); // Add a new thunderstorm
+      break;
+    case "13d": //snow
+      dayweather_animation_tag[i] = setInterval(showSnow, 1000, i); // Add a new snow
+      break;
+    case "50d": //mist
+      dayweather_animation_tag[i] = setInterval(showMist, 1000, i); // Add a new mist
+      break;
+    default:
+      break;
+  }
+}
+
+// Dress forecast by temperature
 function showDressForecast(i,weatherobj) {
 
   // show dress suggest
-  var el = document.createElement('div');
+  let el =  document.createElement('div');
   el.classList.add('dress_pic');
 
-  // show base people kayer
+  // show base people layer
   let x = document.createElement('img');
   x.classList.add('layer');
   x.style.zIndex = 1;
@@ -217,17 +187,17 @@ function showDressForecast(i,weatherobj) {
   //show tops layer.
   let x1 = document.createElement('img');
   x1.classList.add('layer');
-  x1.style.zIndex = 2;
+  x1.style.zIndex = 3;
 
   //show coats layer.
   let x2 = document.createElement('img');
   x2.classList.add('layer');
-  x2.style.zIndex = 3;
+  x2.style.zIndex = 4;
 
   //show bottoms layer.
   let x3 = document.createElement('img');
   x3.classList.add('layer');
-  x3.style.zIndex = 2;
+  x3.style.zIndex = 3;
 
   //show shoes layer.
   let x4 = document.createElement('img');
@@ -239,146 +209,185 @@ function showDressForecast(i,weatherobj) {
   x5.classList.add('layer');
   x5.style.zIndex = 2;
 
-  var weacon = weatherobj.list[i].weather[0].main;
+  var weacon = weatherobj.weather[0].main;
 
 	if (weatherobj.temp.day > 25) {     
-    x1.src = "images/dress/tops/white_tshirt.png";
+    x1.src = "/images/dress/tops/white_tshirt.png";
 
     // Randomly choose between shorts and skirts
     let t = Math.random();
     if (t > 0.75){
-      x3.src = "images/dress/pants/short.png";
+      x3.src = "/images/dress/pants/short.png";
     }
     else if (t > 0.5 && t <= 0.75){
-      x3.src = "images/dress/pants/pink_skirt.png";}
+      x3.src = "/images/dress/pants/pink_skirt.png";}
     
     else if (t > 0.25 && t <= 0.5){
-      x3.src = "images/dress/pants/yellow_skirt.png";
+      x3.src = "/images/dress/pants/yellow_skirt.png";
     }
     else{
-      x3.src = "images/dress/pants/green_long_dress.png";
+      x3.src = "/images/dress/pants/green_long_dress.png";
     }
-      
-    x4.src = "images/dress/shoes/sandles.png";
 
-
-
-
-} else if (weatherobj.temp.day > 20 && weatherobj.temp.day <= 25) { // outfit = "Long-sleeved Top, Long Pants, and a Down Jacket";
-    x1.src = "images/dress/tops/white_tshirt.png";
+    x4.src = "/images/dress/shoes/sandles.png";
+  } 
+  else if (weatherobj.temp.day > 20 && weatherobj.temp.day <= 25) {
+    x1.src = "/images/dress/tops/white_tshirt.png";
 
     // Randomly choose between shorts and skirts
     let t = Math.random();
     if (t > 0.75){
-      x3.src = "images/dress/pants/short.png";
+      x3.src = "/images/dress/pants/short.png";
     }
     else if (t > 0.5 && t <= 0.75){
-      x3.src = "images/dress/pants/pink_skirt.png";}
+      x3.src = "/images/dress/pants/pink_skirt.png";}
     
     else if (t > 0.25 && t <= 0.5){
-      x3.src = "images/dress/pants/yellow_skirt.png";
+      x3.src = "/images/dress/pants/yellow_skirt.png";
     }
-    else (t <= 0.25){
-      x3.src = "images/dress/pants/green_long_dress.png";
+    else {
+      x3.src = "/images/dress/pants/green_long_dress.png";
     }
       
-    x4.src = "images/dress/shoes/shoes.png";
-
-
-} else if (weatherobj.temp.day > 17 && weatherobj.temp.day <= 20) { // outfit = "Long-sleeved Top, Long Pants, and a Coat";
-      x1.src = "images/dress/tops/long_sleeve.png"; 
-      x3.src = "images/dress/pants/pant.png";
-      x4.src = "images/dress/shoes/shoes.png";
-
-
-} else if (weatherobj.temp.day > 15 && weatherobj.temp.day <= 17){
+    x4.src = "/images/dress/shoes/shoes.png";
+  } 
+  else if (weatherobj.temp.day > 17 && weatherobj.temp.day <= 20) {
+    x1.src = "/images/dress/tops/long_sleeve.png"; 
+    x3.src = "/images/dress/pants/pant.png";
+    x4.src = "/images/dress/shoes/shoes.png";
+  } 
+  else if (weatherobj.temp.day > 15 && weatherobj.temp.day <= 17){
     let t = Math.random();
     if (t > 0.5){
-      x1.src = "images/dress/tops/long_sleeve.png"; 
+      x1.src = "/images/dress/tops/long_sleeve.png"; 
     }
     else{
-      x1.src = "images/dress/tops/sweater.png";
+      x1.src = "/images/dress/tops/sweater.png";
     }
-    x3.src = "images/dress/pants/pant.png";
-    x4.src = "images/dress/shoes/shoes.png";
-
-    
-
-} else if (weatherobj.temp.day > 10 && weatherobj.temp.day <= 15){
+    x3.src = "/images/dress/pants/pant.png";
+    x4.src = "/images/dress/shoes/shoes.png";
+  } 
+  else if (weatherobj.temp.day > 10 && weatherobj.temp.day <= 15){
   let t = Math.random();
     if (t > 0.5){
-      x1.src = "images/dress/tops/long_sleeve.png"; 
+      x1.src = "/images/dress/tops/long_sleeve.png"; 
     }
     else{
-      x1.src = "images/dress/tops/sweater.png";
+      x1.src = "/images/dress/tops/sweater.png";
     }
-    x2.src = "images/dress/coats/trench_coat.png";
+
+    x2.src = "/images/dress/coats/trench_coat.png";
     el.appendChild(x2);
-    x3.src = "images/dress/pants/pant.png";
-    x4.src = "images/dress/shoes/boots.png";
 
-    x5.src = "images/dress/accessories/scarf.png";
-    el.appendChild(x5);
-    x5.src = "images/dress/accessories/gloves.png";
-    el.appendChild(x5);
-    x5.src = "images/dress/accessories/hat.png";
-    el.appendChild(x5);
-    x5.src = "images/dress/accessories/binnie.png";
-    el.appendChild(x5);
+    x3.src = "/images/dress/pants/pant.png";
+    x4.src = "/images/dress/shoes/boots.png";
 
-
-
-} else if (weatherobj.temp.day <= 10){
+    x5.src = "/images/dress/accessories/scarf.png";
+    el.appendChild(x5);
+    x5.src = "/images/dress/accessories/gloves.png";
+    el.appendChild(x5);
+    x5.src = "/images/dress/accessories/hat.png";
+    el.appendChild(x5);
+    x5.src = "/images/dress/accessories/binnie.png";
+    el.appendChild(x5);
+  } 
+  else if (weatherobj.temp.day <= 10){
     let t = Math.random();
     if (t > 0.5){
-      x1.src = "images/dress/tops/long_sleeve.png"; 
+      x1.src = "/images/dress/tops/long_sleeve.png"; 
     }
     else{
-      x1.src = "images/dress/tops/sweater.png";
+      x1.src = "/images/dress/tops/sweater.png";
     }
-    x2.src = "images/dress/coats/puffer_jacket.png";
+    x2.src = "/images/dress/coats/puffer_jacket.png";
     el.appendChild(x2);
-    x3.src = "images/dress/pants/pant.png";
-    x4.src = "images/dress/shoes/boots.png";
+    x3.src = "/images/dress/pants/pant.png";
+    x4.src = "/images/dress/shoes/boots.png";
     
-    x5.src = "images/dress/accessories/scarf.png";
+    x5.src = "/images/dress/accessories/scarf.png";
     el.appendChild(x5);
-    x5.src = "images/dress/accessories/gloves.png";
+    x5.src = "/images/dress/accessories/gloves.png";
     el.appendChild(x5);
-    x5.src = "images/dress/accessories/hat.png";
+    x5.src = "/images/dress/accessories/hat.png";
     el.appendChild(x5);
-    x5.src = "images/dress/accessories/binnie.png";
+    x5.src = "/images/dress/accessories/binnie.png";
     el.appendChild(x5);
   }
-   else {                             
-      x1.src = "images/dress/coats/coat.png";  
-  }
-
 
   if (weacon == "Clear"){
-    x5.src = "images/dress/accessories/sunglasses.png";
-  }
-  if (weacon == "Rain" || weacon == "Drizzle"){
-    x5.src = "images/dress/accessories/umbrella.png";
-    x4.src = "images/dress/shoes/rain_shoes.png";
+    x5.src = "/images/dress/accessories/sunglasses.png";
+    el.appendChild(x5);
   }
 
+  if (weacon == "Rain" || weacon == "Drizzle"){
+    x2.src = "/images/dress/coats/raincoat.png";
+    el.appendChild(x2);
+    x4.src = "/images/dress/shoes/rain_shoes.png";
+  }
 
     el.appendChild(x1); //show tops layer. 
-//    el.appendChild(x2); //show coats layer.
     el.appendChild(x3); //show pants layer.
     el.appendChild(x4); //show shoes layer.
-//    el.appendChild(x5); //show accessory layer.
 
-  document.querySelector('#d'+i).appendChild(el);
-
-}
-
-// Dress content by OpenAI
-function showDressContent(cityName) {
+  document.getElementById('d'+i).appendChild(el); // show dress pic.
 
 }
 
+// This script is used to call the OpenAI API and get a response based on the weather forecast.
+async function callOpenAI(i,weatherobj) {
+  //promptText = " "+JSON.stringify(weatherobj);
+  const response = await fetch("https://www.dressforecast.com/api/openai/v1/responses", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      "model": "gpt-4o-mini",
+      "input": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "input_text",
+              "text": "As a fusion expert. Give me the dressing suggestion which is less than 50 tokens base on the weather forecast. Only dressing suggestion, no weather conditions, no temperatures. Here is the weather forecast from Open Weather API."
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "input_text",
+              "text": JSON.stringify(weatherobj)
+            }
+          ]
+        }],
+      "text": {
+        "format": {
+          "type": "text"
+        }
+      },
+      "reasoning": {},
+      "tools": [],
+      "temperature": 1,
+      "max_output_tokens": 100,
+      "top_p": 0.75,
+      "store": false
+    }),
+  });
+
+  const data = await response.json();
+
+  let el = document.createElement('div');
+  el.classList.add('dress_content');
+
+  el.textContent = data.output[0].content[0].text;
+
+  document.getElementById("d"+i).appendChild(el);
+  
+}
+
+// Show weather animation of sun.
 function showSun(d){
     let sun = document.createElement('div');
     sun.classList.add('sun');
@@ -387,7 +396,7 @@ function showSun(d){
     let wd = 80;
     x.style.width = `${wd}px`; // Random sun's size
     x.style.height = `${wd}px`;
-    x.src="images/sun2.png";
+    x.src="/images/icons/01d.png";
 
     sun.appendChild(x);
     sun.style.position = 'absolute';
@@ -397,7 +406,7 @@ function showSun(d){
     document.querySelector('#d'+ d + '  .weather').appendChild(sun);
 }
 
-// Show sun weather
+// Show weather animation of sunray.
 function showRays(d){
     let ray = document.createElement('div');
     ray.classList.add('sunray');
@@ -430,7 +439,7 @@ function showRays(d){
   }
 
 
-// Show cloud weather
+// Show weather animation of cloud
 function showCloud(d) {
   let cloud = document.createElement('div');
   cloud.classList.add('clouds'); // Ensure this matches your CSS class name
@@ -439,7 +448,7 @@ function showCloud(d) {
   let wd = Math.random() * 10 + 60;
   x.style.width = `${wd+30}px`; // Random cloud size
   x.style.height = `${wd+20}px`;
-  x.src="images/clouds.png";
+  x.src="/images/icons/03d.png";
 
   cloud.appendChild(x);
   cloud.style.position = 'absolute';
@@ -457,8 +466,8 @@ function showCloud(d) {
 }, 4000);
 }
 
-//show rain weather
-function showRain(d){ //d=1,2,3,4,5
+//show weather animation of rain.
+function showRain(d){ 
   let rain = document.createElement('div');
   rain.classList.add('rain');
 
@@ -485,7 +494,35 @@ function showRain(d){ //d=1,2,3,4,5
 }, 4000);
 }
 
-//show snow weather
+//show weather animation of rain.
+function showThunderstorm(d){ 
+  let thunder = document.createElement('div');
+  thunder.classList.add('thunderstorm');
+
+  let x = document.createElement('img');
+  let wd = Math.random() * 5+5;
+  x.style.width = `${wd}px`; // Random rain size
+  x.style.height = `${wd}px`;
+  x.src="/images/raindrop.png";
+
+  thunder.appendChild(x);
+
+  thunder.style.position= 'absolute';
+  thunder.style.left = `${(document.body.clientWidth-1000)/2 + 200*d + Math.random() * 200}px`; // Random rain position
+  thunder.style.top = `180px`;
+  thunder.style.animationName = `raindrops`;
+  thunder.style.animationIterationCount = `1`;
+  //rain.style.animationDuration = `${Math.random() * 10}s`; // Randomize animation duration
+  thunder.style.animationDuration = `5s`;
+
+  document.querySelector('#d'+ d + '  .weather').appendChild(thunder);
+  // Remove comet after animation completes
+  setTimeout(() => {
+    thunder.remove();
+}, 4000);
+}
+
+//show weather animation of snow.
 function showSnow(d){
   let snow = document.createElement('div');
   snow.classList.add('snow');
@@ -512,7 +549,7 @@ function showSnow(d){
 }, 4000);
 }
 
-//show mist weather
+//show weather animation of mist.
 function showMist(d){
   let mist = document.createElement('div');
   mist.classList.add('mists'); // Ensure this matches your CSS class name

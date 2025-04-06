@@ -1,68 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta content="always" name="referrer">
+	<meta name="theme-color" content="#ffffff">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<meta name="description" content="DressForecast is a web application that provides clothing recommendations.">
+	<meta name="keywords" content="DressForecast, clothing recommendations">
+	<title>DressForecast @ AI Powered</title>
+	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="icon" sizes="any" href="/favicon.ico">
+	<link rel="stylesheet" href="/static/style.css" />
+	
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-VVE5KW90HP"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+			gtag('config', 'G-VVE5KW90HP');
+	</script>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-VVE5KW90HP"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+	<!-- Google charts-->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-  gtag('config', 'G-VVE5KW90HP');
-</script>
-
-<!-- Google charts-->
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DressForecast</title>
-  <link rel="stylesheet" href="static/style.css" />
 </head>
 
 <body>
 	<div class="centered-div">
 
-	<div id="header">
-		<img src="images/logo.png" alt="logo" id="logo">
-		<div id="dc">
-			<input id="city" placeholder="Input your City" list="citys" autofocus>
-			<datalist id="citys">
-   				<option value="sydney">
-   				<option value="melbourn">
-   				<option value="cairns">
-   				<option value="adelaide">
-   				<option value="darwin">
-				<option value="brisbane">
-				<option value="canberra">
-				<option value="goldcoast">
-			</datalist>
+		<div id="header">
+			<img src="/images/logo.png" id="logo">
+			<div id="dc">
+				<input id="city" placeholder="City,Country" list="citys" autofocus>
+				<datalist id="citys">
+   					<option value="sydney,AU">
+   					<option value="melbourne,AU">
+   					<option value="cairns,AU">
+					<option value="brisbane,AU">
+				</datalist>
+			</div>
 		</div>
-	</div>
 	
-	<div id="main">	</div>
+		<div id="main">	</div>
 
-	<div id="chart_div" style="width: 1000px; height: 200px"></div>
+		<div id="chart_div" style="width: 1000px; height: 200px"></div>
 
-	<div id="footer">
-		@ Powered by Annie
-	</div>
-
-	<div>
-		<button id="btn-sun">AddSun</button>
-		<button id="btn-cloud">AddCloud</button>
-		<button id="btn-rain">AddRain</button>
-		<button id="btn-snow">AddSnow</button>
-		<button id="btn-mist">AddMist</button>
-		<button id="btn-clear">Clear weather</button>
-	</div>
-	<div id="test"></div>
+		<div id="footer">@ AI Powered by Annie</div>
 
 	</div>
 
-	<script src="static/script.js"></script>
-	
+	<script src="/static/script.js"></script>
+
 </body>
 
 </html>

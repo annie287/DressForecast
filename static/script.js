@@ -10,7 +10,7 @@ var dayNumber = 5;
 var weatherobj;
 
 // Get user's location using the Geolocation API
-fetch("https://api.ipgeolocation.io/ipgeo?apiKey=ce5e1a3deed94a2897f1c83aba82b031&fields=city,country_code2")
+fetch("https://api.ipgeolocation.io/ipgeo?apiKey=dce2e0458e89449488919468bdc2d21b&fields=city,country_code2")
   .then(response => response.json())
   .then(data => {
       console.log(`Your city is ：${data.city}, ${data.country_code2}`);

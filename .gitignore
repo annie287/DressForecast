@@ -1,1 +1,4 @@
 /web.config
+/.well-known/*
+/.git/*
+/.gitignore

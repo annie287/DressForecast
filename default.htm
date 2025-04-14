@@ -6,8 +6,8 @@
 	<meta content="always" name="referrer">
 	<meta name="theme-color" content="#ffffff">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-	<meta name="description" content="DressForecast is a web application that provides clothing recommendations.">
-	<meta name="keywords" content="DressForecast, clothing recommendations">
+	<meta name="description" content="DressForecast is a web application that provides outfit suggestion.">
+	<meta name="keywords" content="DressForecast, outfit suggestion">
 	<title>DressForecast @ AI Powered</title>
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
 	<link rel="icon" sizes="any" href="/favicon.ico">
@@ -27,18 +27,13 @@
 </head>
 
 <body>
-	<div class="centered-div">
+	<div class="centered-container">
 
 		<div id="header">
 			<img src="/images/logo.png" id="logo">
-			<div id="dc">
-				<input id="city" placeholder="City,Country" list="citys" autofocus>
-				<datalist id="citys">
-   					<option value="sydney,AU">
-   					<option value="melbourne,AU">
-   					<option value="cairns,AU">
-					<option value="brisbane,AU">
-				</datalist>
+			<div id="autocomplete-container">
+				<input id="city" placeholder="Input City,Country" type="text" autofocus>
+				<ul id="autocomplete-list"></ul>
 			</div>
 		</div>
 	

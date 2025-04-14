@@ -1,31 +1,39 @@
 
 // This script is used to get the user's location and display the weather forecast for that location.
 // Author: Anny
-// last updated: 2025-04-06
+// last updated: 2025-04-13
 
 //Initialize variables
 var dayweather_animation_tag = []; // Init weather animation tag
-var cityName = ""; // Init city name
+//var cityName = ""; // Init city name
 var dayNumber = 5;
 var weatherobj;
+
+const input = document.getElementById('city');
+const list = document.getElementById('autocomplete-list');
+
+//Init webpages
+document.addEventListener('DOMContentLoaded', function() {
 
 // Get user's location using the Geolocation API
 fetch("https://api.ipgeolocation.io/ipgeo?apiKey=dce2e0458e89449488919468bdc2d21b&fields=city,country_code2")
   .then(response => response.json())
   .then(data => {
-      console.log(`Your city is ：${data.city}, ${data.country_code2}`);
-      document.getElementById('city').value = data.city+','+data.country_code2;
+      //console.log(`Your city is ：${data.city}, ${data.country_code2}`);
+      input.value = data.city+'/'+data.country_code2;
       document.getElementById('city').dispatchEvent(new KeyboardEvent('keypress', {
-        'key': 'Enter',
-        'code': 'Enter',
-        'which': 13,
-        'keyCode': 13,
-        'bubbles': true
+        'key': 'Enter'
       }));
     })
   .catch(error => {
     console.error('request error:', error);
   });
+});
+
+//All Load complete
+document.addEventListener('load', function() {
+
+});
 
 //Init date formatter.
 var formatter = new Intl.DateTimeFormat("en-US",{month: "short", day:"numeric",});
@@ -38,6 +46,9 @@ document.getElementById('city').addEventListener('keypress', function(event) {
   if (event.key === 'Enter' || event.keyCode === 13) { // User pressed Enter.
 
       event.preventDefault(); // disable default action.
+
+      const list = document.getElementById('autocomplete-list');
+      list.style.display = 'none';
  
       // clear every day's weather animations
       for (i in dayweather_animation_tag ){
@@ -46,11 +57,18 @@ document.getElementById('city').addEventListener('keypress', function(event) {
 
       //clear weather div.
       document.getElementById('main').innerHTML = "";
-      cityName = document.getElementById('city').value;
+
+      let cityName = document.getElementById('city').value;
+      var reg = /[,/ .]/; 
+      if (reg.test(cityName)) 
+      { 
+        cityName = cityName.replace(/[,/ .]/g,"/");
+      }
+      else { alert("Pls input correct city/country."); return; }
       
 
       // Get weather data from Open Weather API.
-      var url = "/api/weather/daily/" + cityName.replace(",","/");
+      var url = "/api/weather/daily/" + cityName;
 
       fetch(url)
         .then(response => {
@@ -73,7 +91,7 @@ document.getElementById('city').addEventListener('keypress', function(event) {
           legend: { position: 'right' }
           };
 
-          showCityBackground(cityName.toLowerCase().split(",")[0]); // show city background
+          showCityBackground(cityName.toLowerCase().split("/")[0]); // show city background
 
           for (i in data.list){
             let el = document.createElement('div');
@@ -81,15 +99,6 @@ document.getElementById('city').addEventListener('keypress', function(event) {
             el.id = 'd'+i;
 
             let el1 = document.createElement('div');
-            el1.classList.add('day');
-            el1.textContent = formatter.format(new Date(data.list[i].dt * 1000));
-            el.appendChild(el1);
-          
-            el1 = document.createElement('div');
-            el1.classList.add('tday');
-            el1.textContent = data.list[i].temp.day + '°C';
-            el.appendChild(el1);
-          
             //Add day's weather div.
             el1 = document.createElement('div');
             el1.classList.add('weather');
@@ -103,7 +112,7 @@ document.getElementById('city').addEventListener('keypress', function(event) {
 
             callOpenAI(i,data.list[i]); // show cloth suggestion from OpenAI.
 
-            chartdata.addRows([[formatter.format(new Date(data.list[i].dt)),data.list[i].temp.max,data.list[i].temp.day,data.list[i].temp.min]]);
+            chartdata.addRows([[formatter.format(new Date(data.list[i].dt*1000)),data.list[i].temp.max,data.list[i].temp.day,data.list[i].temp.min]]);
           
           }
 
@@ -113,6 +122,10 @@ document.getElementById('city').addEventListener('keypress', function(event) {
 
         })
         .catch(error => console.error('Error:', error));
+  } else {
+    let cityName = document.getElementById('city').value + event.key;
+      // Call the debounced function with the updated city name
+      debouncedShowSuggestions(cityName);
   }
 });
 
@@ -349,7 +362,7 @@ async function callOpenAI(i,weatherobj) {
           "content": [
             {
               "type": "input_text",
-              "text": "As a fusion expert. Give me the dressing suggestion which is less than 50 tokens base on the weather forecast. Only dressing suggestion, no weather conditions, no temperatures. Here is the weather forecast from Open Weather API."
+              "text": "As a fusion expert. Give me the outfit suggestion which is less than 50 tokens base on the weather forecast. Only outfit suggestion, no weather conditions, no temperatures. Here is the weather forecast from Open Weather API."
             }
           ]
         },
@@ -379,13 +392,99 @@ async function callOpenAI(i,weatherobj) {
   const data = await response.json();
 
   let el = document.createElement('div');
+  el.classList.add('day');
+  el.textContent = formatter.format(new Date(weatherobj.dt * 1000));
+  document.getElementById("d"+i).appendChild(el);
+
+  el = document.createElement('div');
   el.classList.add('dress_content');
-
   el.textContent = data.output[0].content[0].text;
-
   document.getElementById("d"+i).appendChild(el);
   
 }
+
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+      const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+  };
+}
+
+// daley march city suggestion.
+const debouncedShowSuggestions = debounce(function fetchSuggestions(cityName) {
+  if (cityName.length > 3) {
+  // get suggestions list from API
+  fetch(`/api/geo/${cityName}`)
+      .then(response => response.json())
+      .then(data => {
+          // process response, update to suggestions list.
+          updateSuggestionsList(data);
+      });
+  }
+}, 1000); // Delay 1000ms before calling the function
+
+document.getElementById('city').addEventListener('input', function() {
+  const inputValue = input.value;
+  debouncedShowSuggestions(inputValue);
+});
+
+function updateSuggestionsList(data) {
+  list.innerHTML = ""; // clear previous suggestions
+
+  // get suggestions from API
+  data.forEach(item => {
+      const listItem = document.createElement('li');
+      listItem.textContent = item.name+"/"+item.state+"/"+item.country; // 
+      listItem.addEventListener('click', function() {
+        document.getElementById('city').value = item.name+"/"+item.country;
+        list.style.display = 'none';
+    });
+      list.appendChild(listItem);
+  });
+
+  list.style.display = data.length ? 'block' : 'none'; // display suggestions if any
+}
+
+document.addEventListener('click', function(event) {
+  if (event.target !== input) {
+    console.log("click"+event.target);
+      list.style.display = 'none';
+  }
+});
+
+document.addEventListener('keydown', function(event) {
+
+  if (['ArrowDown', 'ArrowUp'].includes(event.key)) {
+      event.preventDefault(); 
+      let activeItem = list.querySelector('li.active');
+      if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          if (activeItem) {
+              activeItem.classList.remove('active');
+              activeItem = activeItem.nextElementSibling || list.firstChild;
+          } else {
+              activeItem = list.firstChild;
+          }
+          activeItem && activeItem.classList.add('active');
+          activeItem && (input.value = activeItem.textContent.split("/")[0]+"/"+activeItem.textContent.split("/")[2]);
+      } else if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          if (activeItem) {
+              activeItem.classList.remove('active');
+              activeItem = activeItem.previousElementSibling || list.lastChild;
+          } else {
+              activeItem = list.lastChild;
+          }
+          activeItem && activeItem.classList.add('active');
+          activeItem && (input.value = activeItem.textContent.split("/")[0]+"/"+activeItem.textContent.split("/")[2]);
+      } 
+  }
+});
 
 // Show weather animation of sun.
 function showSun(d){
@@ -400,8 +499,8 @@ function showSun(d){
 
     sun.appendChild(x);
     sun.style.position = 'absolute';
-    sun.style.left = `${(document.body.clientWidth-1000)/2 + 200*d+140}px`
-    sun.style.top = `240px`; 
+    sun.style.left = `${(document.body.clientWidth-1000)/2 + 200*d+100}px`
+    sun.style.top = `80px`; 
 
     document.querySelector('#d'+ d + '  .weather').appendChild(sun);
 }
@@ -422,11 +521,11 @@ function showRays(d){
     var l = Math.random(d) * 90; // random sunray angle
 
     //ray.style.setProperty('--dynamic-angle', `${l}`);  // change angle to animation position
-    ray.style.setProperty('--dynamic-x', `${-300*(Math.cos(l*Math.PI/180))}px`);  // change angle to animation position
-    ray.style.setProperty('--dynamic-y', `${300*(Math.sin(l*Math.PI/180))}px`);
+    ray.style.setProperty('--dynamic-x', `${-200*(Math.cos(l*Math.PI/180))}px`);  // change angle to animation position
+    ray.style.setProperty('--dynamic-y', `${200*(Math.sin(l*Math.PI/180))}px`);
 
-    ray.style.left = `${(document.body.clientWidth-1000)/2 + 200*d+150}px`; //random sunray position
-    ray.style.top = `250px`; 
+    ray.style.left = `${(document.body.clientWidth-1000)/2 + 200*d+100}px`; //random sunray position
+    ray.style.top = `90px`; 
 
     ray.style.animationDuration = `5s`; // Randomize animation duration
 
@@ -453,7 +552,7 @@ function showCloud(d) {
   cloud.appendChild(x);
   cloud.style.position = 'absolute';
   cloud.style.left = `${(document.body.clientWidth-1000)/2 + 200*d+50 + Math.random() * 50}px`; // Random cloud position
-  cloud.style.top = `${Math.random() * 200+160}px`; 
+  cloud.style.top = `${Math.random() * 100+100}px`; 
   cloud.style.animationName = `clouds`; //@keyframes in css
   cloud.style.animationIterationCount = `1`;
   //cloud.style.animationDuration = `${Math.random() * 5 + 2}s`; // Randomize animation duration
@@ -481,7 +580,7 @@ function showRain(d){
 
   rain.style.position= 'absolute';
   rain.style.left = `${(document.body.clientWidth-1000)/2 + 200*d + Math.random() * 200}px`; // Random rain position
-  rain.style.top = `180px`;
+  rain.style.top = `90px`;
   rain.style.animationName = `raindrops`;
   rain.style.animationIterationCount = `1`;
   //rain.style.animationDuration = `${Math.random() * 10}s`; // Randomize animation duration
@@ -509,7 +608,7 @@ function showThunderstorm(d){
 
   thunder.style.position= 'absolute';
   thunder.style.left = `${(document.body.clientWidth-1000)/2 + 200*d + Math.random() * 200}px`; // Random rain position
-  thunder.style.top = `180px`;
+  thunder.style.top = `90px`;
   thunder.style.animationName = `raindrops`;
   thunder.style.animationIterationCount = `1`;
   //rain.style.animationDuration = `${Math.random() * 10}s`; // Randomize animation duration
@@ -537,7 +636,7 @@ function showSnow(d){
 
   snow.style.position= 'absolute';
   snow.style.left = `${(document.body.clientWidth-1000)/2 + 200*d + Math.random() * 200}px`; // Random rain position
-  snow.style.top = `240px`;
+  snow.style.top = `90px`;
   snow.style.animationName = `snowflakes`;
   snow.style.animationIterationCount = `1`;
   snow.style.animationDuration = `5s`; // Randomize animation duration
@@ -563,7 +662,7 @@ function showMist(d){
   mist.appendChild(x);
   mist.style.position = 'absolute';
   mist.style.left = `${(document.body.clientWidth-1000)/2 + 200*d + 100 + Math.random() * 50}px`; // Random mist position
-  mist.style.top = `${Math.random() * 50+260}px`; 
+  mist.style.top = `${Math.random() * 50+90}px`; 
   mist.style.animationName = `mists`; //@keyframes in css
   mist.style.animationIterationCount = `1`;
   mist.style.animationDuration = `${Math.random() * 5 + 2}s`; // Randomize animation duration

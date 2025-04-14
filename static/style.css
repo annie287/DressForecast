@@ -15,7 +15,7 @@ body {
   align-items: center; /* 垂直居中 */
 }
 
-.centered-div {
+.centered-container {
   width: 1000px; /* 示例宽度 */
 }
 
@@ -31,6 +31,10 @@ body {
   z-index: -1;
 }
 
+#autocomplete-container {
+  position: relative;
+}
+
 /* city input*/
 #city{
   width: 400px;
@@ -40,6 +44,30 @@ body {
   margin-top: 30px;
   border: 2px;
 }
+
+#autocomplete-list {
+  position: absolute;
+  top: 70px;
+  right: 0;
+  width: 400px;
+  border: 1px solid #ccc;
+  border-top: none;
+  z-index: 1000;
+  background: white;
+  list-style: none;
+  display: none; 
+}
+
+#autocomplete-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+#autocomplete-list li:hover,
+#autocomplete-list li.active {
+  background-color: #f1f1f1;
+}
+
 
 /* Select bar styling */
 #main{
@@ -84,12 +112,12 @@ body {
 .dress_pic .layer{
   position: absolute;
   top: 0;
-  left:0;
+  left:10px;
 }
 
 .weather {
   width: 200px;
-  height: 100px;
+  height: 120px;
 }
 
 .dress_content {
@@ -150,13 +178,13 @@ body {
 
 @keyframes raindrops{
   0%   { transform: translate(0px, 10px);}
-  100% { transform: translate(0px, 350px); opacity: 0; }
+  100% { transform: translate(0px, 450px); opacity: 0; }
 }
 
 
 @keyframes snowflakes{
   0%   { transform: translate(0px, 0px);}
-  100% { transform: translate(0px, 250px); opacity: 1; }
+  100% { transform: translate(0px, 470px); opacity: 1; }
 }
 
 @keyframes mists{

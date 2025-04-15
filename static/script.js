@@ -5,15 +5,26 @@
 
 //Initialize variables
 var dayweather_animation_tag = []; // Init weather animation tag
-//var cityName = ""; // Init city name
-var dayNumber = 5;
 var weatherobj;
+var dayNumber = 5;
+var daycard_x = 5;
+var daycard_y = 1;
 
 const input = document.getElementById('city');
 const list = document.getElementById('autocomplete-list');
+const main = document.getElementById('main');
 
 //Init webpages
 document.addEventListener('DOMContentLoaded', function() {
+
+// optimize the webpage for different screen sizes. e.g. PC, phone, tablet.
+// screen size is 1920*1080, browser size is 1905*1030
+// screen size is iphone, browser size is 428*1030
+if (document.body.clientWidth > 1000){
+  document.getElementById('centered-container').style.width = "1000px";
+} else {
+  document.getElementById('centered-container').style.width = "100%";
+};
 
 // Get user's location using the Geolocation API
 fetch("https://api.ipgeolocation.io/ipgeo?apiKey=dce2e0458e89449488919468bdc2d21b&fields=city,country_code2")
@@ -415,7 +426,7 @@ function debounce(func, wait) {
   };
 }
 
-// daley march city suggestion.
+// march city suggestion, after user input 1s.
 const debouncedShowSuggestions = debounce(function fetchSuggestions(cityName) {
   if (cityName.length > 3) {
   // get suggestions list from API
@@ -426,7 +437,7 @@ const debouncedShowSuggestions = debounce(function fetchSuggestions(cityName) {
           updateSuggestionsList(data);
       });
   }
-}, 1000); // Delay 1000ms before calling the function
+}, 1000); 
 
 document.getElementById('city').addEventListener('input', function() {
   const inputValue = input.value;
@@ -583,7 +594,6 @@ function showRain(d){
   rain.style.top = `90px`;
   rain.style.animationName = `raindrops`;
   rain.style.animationIterationCount = `1`;
-  //rain.style.animationDuration = `${Math.random() * 10}s`; // Randomize animation duration
   rain.style.animationDuration = `5s`;
 
   document.querySelector('#d'+ d + '  .weather').appendChild(rain);

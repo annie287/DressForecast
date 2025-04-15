@@ -7,21 +7,20 @@
 }
 
 body {
-  background-color: #f8f8ff;/* Page background */
-  height: 100%; /* 确保body和html占据整个视口高度 */
-  margin: 0; /* 移除默认的外边距 */
-  display: flex; /* 启用Flexbox布局 */
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
+  height: 100%; 
+  margin: 0; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
 }
 
-.centered-container {
-  width: 1000px; /* 示例宽度 */
+Center the container x
+#centered-container {
+width: 1000px;
 }
 
 #header{
   height: 80px;
-  background-color:#f8f8ff;  
 }
 
 #header img {
@@ -37,7 +36,7 @@ body {
 
 /* city input*/
 #city{
-  width: 400px;
+  width: 300px;
   height: 40px;
   font-size: 30px;
   float: right;
@@ -49,7 +48,7 @@ body {
   position: absolute;
   top: 70px;
   right: 0;
-  width: 400px;
+  width: 300px;
   border: 1px solid #ccc;
   border-top: none;
   z-index: 1000;
@@ -68,10 +67,8 @@ body {
   background-color: #f1f1f1;
 }
 
-
 /* Select bar styling */
 #main{
-  /*background-image: url("/images/melbourn_city1.png");*/
   background-repeat: no-repeat;
   display: grid;
   grid-template-columns: auto auto auto auto auto;
@@ -81,6 +78,8 @@ body {
 
 .day-card {
   text-align: right;
+  width: 200px;
+  height:700px;
   font-weight: bold;
 }
 

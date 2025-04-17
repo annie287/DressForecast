@@ -88,11 +88,9 @@ width: 1000px;
   font-size: 40px;
 } 
 
-.day-card .tday {
+.day-card .temp {
+  padding-right: 50px;
   font-size: 20px;
-} 
-.day-card .tmaxmin {
-  font-size: 16px;
 } 
 
 .dress_pic{

@@ -405,6 +405,17 @@ async function callOpenAI(i,weatherobj) {
   let el = document.createElement('div');
   el.classList.add('day');
   el.textContent = formatter.format(new Date(weatherobj.dt * 1000));
+
+  let el1 = document.createElement('div');
+  el1.classList.add('tday');
+  el1.textContent = "Day:" +  weatherobj.temp.day + "°C";
+  el.appendChild(el1);
+
+  el1 = document.createElement('div');
+  el1.classList.add('tmaxmin');
+  el1.textContent = "Max:" +  weatherobj.temp.max + "°C  "+"Min:" + weatherobj.temp.min + "°C";
+  el.appendChild(el1);
+  
   document.getElementById("d"+i).appendChild(el);
 
   el = document.createElement('div');

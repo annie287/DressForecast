@@ -1,1 +1,1 @@
-"sydney","melbourne"
+"sydney","melbourne","perth","brisbane","adelaide","hobart","canberra","cairns"

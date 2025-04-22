@@ -3,7 +3,7 @@
 // Author: Anny
 // last updated: 2025-04-13
 
-//Initialize variables
+//Initialize globle variables
 var dayweather_animation_tag = []; // Init weather animation tag
 var weatherobj;
 var dayNumber = 5;
@@ -13,6 +13,12 @@ var daycard_y = 1;
 const input = document.getElementById('city');
 const list = document.getElementById('autocomplete-list');
 const main = document.getElementById('main');
+
+//Init date formatter.
+var formatter = new Intl.DateTimeFormat("en-US",{month: "short", day:"numeric",});
+
+//Init temperature chart.
+google.charts.load('current', {'packages':['corechart']});
 
 //Init webpages
 document.addEventListener('DOMContentLoaded', function() {
@@ -45,12 +51,6 @@ fetch("https://api.ipgeolocation.io/ipgeo?apiKey=dce2e0458e89449488919468bdc2d21
 document.addEventListener('load', function() {
 
 });
-
-//Init date formatter.
-var formatter = new Intl.DateTimeFormat("en-US",{month: "short", day:"numeric",});
-
-//Init temperature chart.
-google.charts.load('current', {'packages':['corechart']});
 
 // Add event listener to the input element's keypress event.
 document.getElementById('city').addEventListener('keypress', function(event) {
@@ -366,7 +366,7 @@ async function callOpenAI(i,weatherobj) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      "model": "gpt-4o-mini",
+      "model": "gpt-4.1-nano",
       "input": [
         {
           "role": "user",
@@ -614,14 +614,14 @@ function showRain(d){
 }, 4000);
 }
 
-//show weather animation of rain.
+//show weather animation of thundestorm.
 function showThunderstorm(d){ 
   let thunder = document.createElement('div');
   thunder.classList.add('thunderstorm');
 
   let x = document.createElement('img');
   let wd = Math.random() * 5+5;
-  x.style.width = `${wd}px`; // Random rain size
+  x.style.width = `${wd}px`; // Random thunderstorm size
   x.style.height = `${wd}px`;
   x.src="/images/raindrop.png";
 

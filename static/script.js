@@ -27,11 +27,24 @@ document.addEventListener('DOMContentLoaded', function() {
 // optimize the webpage for different screen sizes. e.g. PC, phone, tablet.
 // screen size is 1920*1080, browser size is 1905*1030
 // screen size is iphone, browser size is 428*1030
-if (document.body.clientWidth > 1000){
+
+if (document.body.clientWidth >= 1000){
   document.getElementById('centered-container').style.width = "1000px";
+  document.getElementById('main').style.gridTemplateColumns = "auto auto auto auto auto";
+} else if (document.body.clientWidth >= 800 && document.body.clientWidth < 1000) {
+  document.getElementById('centered-container').style.width = "100%";
+  document.getElementById('main').style.gridTemplateColumns = "auto auto auto auto";
+} else if (document.body.clientWidth >= 600 && document.body.clientWidth < 800) {
+  document.getElementById('centered-container').style.width = "100%";
+  document.getElementById('main').style.gridTemplateColumns = "auto auto auto";
+} else if (document.body.clientWidth >= 400 && document.body.clientWidth < 600) {
+  document.getElementById('centered-container').style.width = "100%";
+  document.getElementById('main').style.gridTemplateColumns = "auto auto";
 } else {
   document.getElementById('centered-container').style.width = "100%";
-};
+  document.getElementById('main').style.gridTemplateColumns = "auto";
+}
+;
 
 // Get user's location using the Geolocation API
 fetch("https://api.ipgeolocation.io/ipgeo?apiKey=dce2e0458e89449488919468bdc2d21b&fields=city,country_code2")
@@ -278,7 +291,7 @@ function showDressForecast(i,weatherobj) {
     else {
       x3.src = "/images/dress/pants/green_long_dress.png";
     }
-      
+    
     x4.src = "/images/dress/shoes/shoes.png";
   } 
   else if (weatherobj.temp.day > 17 && weatherobj.temp.day <= 20) {
@@ -582,7 +595,6 @@ function showCloud(d,weatherobj) {
   let wd = Math.random() * 10 + 60;
   x.style.width = `${wd+30}px`; // Random cloud size
   x.style.height = `${wd+20}px`;
-  console.log(`Weather icon is ：${weatherobj.weather[0].icon}`);
   
   //if(weatherobj.weather[0].icon == "03d")
   x.src="/images/icons/03d.png";

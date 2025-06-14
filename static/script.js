@@ -381,7 +381,7 @@ function showDressForecast(i,weatherobj) {
 // This script is used to call the OpenAI API and get a response based on the weather forecast.
 async function callOpenAI(i,weatherobj) {
   //promptText = " "+JSON.stringify(weatherobj);
-  const response = await fetch("/api/openai/v1/responses", {
+  const response = await fetch("/api/ai", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -1,7 +1,7 @@
 
-// This script is used to get the user's location and display the weather forecast for that location.
+// This script is used to get the user's location and display the weather forecast.
 // Author: Anny
-// last updated: 2025-04-13
+// last updated: 2025-06-15
 
 //Initialize globle variables
 var dayweather_animation_tag = []; // Init weather animation tag
@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .catch(error => {
       console.error('request error:', error);
     });
+
 });
 
 //All Load complete
@@ -80,9 +81,9 @@ function showCityDressForecast() {
   document.getElementById('main').innerHTML = "";
 
   cityName = document.getElementById('city').value;
-  var reg = /[,/ .]/;
+  var reg = /[,/.]/;
   if (reg.test(cityName)) {
-    cityName = cityName.replace(/[,/ .]/g, "/");
+    cityName = cityName.replace(/[,/.]/g, "/").toLowerCase();
   }
   else { alert("Pls input correct city/country."); return; }
 
@@ -371,40 +372,14 @@ async function callOpenAI(i, weatherobj) {
   const response = await fetch("/api/ai", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      Authorization: "Bearer", // Use your OpenAI API key
     },
     body: JSON.stringify({
       "model": "gpt-4.1-nano",
-      "input": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "input_text",
-              "text": "As a fusion expert. Give me the outfit suggestion which is less than 50 tokens base on the weather forecast. Only outfit suggestion, no weather conditions, no temperatures. Here is the weather forecast from Open Weather API."
-            }
-          ]
-        },
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "input_text",
-              "text": JSON.stringify(weatherobj)
-            }
-          ]
-        }],
-      "text": {
-        "format": {
-          "type": "text"
-        }
-      },
-      "reasoning": {},
-      "tools": [],
-      "temperature": 1,
-      "max_output_tokens": 100,
-      "top_p": 0.75,
-      "store": false
+      "instructions": "Talk like a fusion expert.",
+      "input": "Give me the outfit suggestion which is less than 50 tokens base on the weather forecast. Only outfit suggestion, no weather conditions, no temperatures. Here is the weather forecast from Open Weather API. "
+        + JSON.stringify(weatherobj),
+      "max_output_tokens": 100
     }),
   });
 
